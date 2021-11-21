@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://kit.fontawesome.com/3943ac4422.js" crossorigin="anonymous"></script>
+    <style>
+        @import url('http://fonts.cdnfonts.com/css/bahnschrift');
+    *{
+        margin: 0;
+        font-family: bahnschrift;
+    }
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75vh;
+}
+.card{
+    height: 450px;
+    width: 300px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 8px 2px #E5E5E5; 
+    box-shadow: 0px 0px 8px 2px #E5E5E5;
+}
+.bg{
+    background: #FAF9F9;
+    color: #000;
+    height: 100%;
+    border-radius: 10px;
+    position: relative;
+    z-index: 1;
+}
+svg{
+    position: absolute;
+    z-index: -2;
+}
+.card-icons{
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 15px 15px;
+}
+.profile-pic{
+    display: flex;
+    justify-content: center;
+}
+img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+}
+.p{
+    text-align: center;
+    margin-top: 10px;
+}
+.icons{
+    display: flex;
+    justify-content: center;
+    font-size: 20px;
+    margin: 80px 0px 50px 0px;
+    gap: 30px;
+    cursor: pointer;
+}
+.user-data{
+    display: flex;
+    translate: 0px 20px;
+}
+.post, .followers, .following{
+    height: 50px;
+    width: 33.3%;
+    text-align: center;
+}
+.num{
+    font-weight: bold;
+    font-size: 17px;
+}
+.txt{
+    color: #FCA311;
+}
+.card-footer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.btn-follow{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    width: 160px;
+    height: 40px;
+    font-size: 15px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    background-color: #FCA311;
+    border-radius: 30px;
+    color: #000;
+}
+    </style>
+</head>
+<body>
+    
+        <div class="row">
+            <h2 style="text-align: center;">Fetch GitHub Profile</h2>
+            <hr>
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="username" class="form-control" placeholder="Search">
+                    <div class="input-group-btn">
+                      <button class="btn btn-default" onclick="fetchData()" type="submit">
+                        <i class="glyphicon glyphicon-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-3"></div>
+        </div>
+    
+    <!--Profile Card-->
+     <div class="container" >
+        <div id="hide" style="display: none;" class="card">
+            <div class="bg">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"> 
+                <path fill="#FCA311" d="M51.1,-59C62,-51.8,63.5,-31.6,63.2,-14C62.8,3.6,60.6,18.6,53.2,30.1C45.8,41.6,33.4,49.5,20.5,52.6C7.6,55.6,-5.6,53.8,-23.3,52.4C-41,51,-63.1,50.1,-75.5,38.7C-87.9,27.3,-90.6,5.4,-83.8,-11.5C-76.9,-28.4,-60.3,-40.3,-44.8,-46.7C-29.2,-53.1,-14.6,-54,2.8,-57.3C20.1,-60.6,40.3,-66.3,51.1,-59Z" transform="translate(113 100)" /> 
+            </svg>
+    
+    <div class="profile-pic">
+        <img id="imgSrc" src="https://picsum.photos/200/300">
+    </div>
+                <p class="p"><b><span id="name">Name</span></b></p>
+                <p class="p"><span id="bio">Bio</span></p>
+                
+                <div class="icons">
+                        <a id="github" href="#"> <i class="fa fa-github"></i> </a> 
+                        <a id="insta" href="#"> <i class="fa fa-instagram"></i> </a> 
+                        <a id="stack" href="#"> <i class="fa fa-stack-overflow"></i> </a> 
+                </div>
+                
+                <div class="user-data">
+                    <div class="post"><div class="num"><span id="repos">0</span></div><div class="txt">Repos</div></div>
+                    <div class="followers"><div class="num"><span id="followers">0</span></div><div class="txt">Followers</div></div>
+                    <div class="following"><div class="num"><span id="following">0</span></div><div class="txt">Following</div></div>
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<script>
+    function fetchData(){
+        var x = document.getElementById("hide");
+            x.style.display = "block";
+        
+        var userName = document.getElementById("username").value;
+        var api = "https://api.github.com/users/"+userName;
+        //alert(api);
+        var jsondata;
+
+        fetch(api)
+        .then(function(data){ 
+        return data.json();})
+        .then(
+        function(json){
+          jsondata = json;
+          document.getElementById("following").innerHTML = jsondata.following;
+          document.getElementById("followers").innerHTML = jsondata.followers;
+          document.getElementById("repos").innerHTML = jsondata.public_repos;
+          document.getElementById("name").innerHTML = jsondata.name;
+          document.getElementById("bio").innerHTML = jsondata.bio;
+          document.getElementById("imgSrc").src = jsondata.avatar_url;
+          //alert(wer);
+          document.getElementById("github").href = jsondata.html_url;
+          document.getElementById("insta").href = jsondata.avatar_url;
+          document.getElementById("stack").href = jsondata.avatar_url;
+          //alert(wer);
+        }
+      )
+
+       
+    }
+</script>
+</html>
